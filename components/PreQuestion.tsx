@@ -10,16 +10,18 @@ const PreQuestion = () => {
   const [headerTypedText, setHeaderTypedText] = useState("");
   const headerFullText = "Hello There, I am MyGovAI";
   const [isHeaderTypingComplete, setIsHeaderTypingComplete] = useState(false);
-  const [isListening, setIsListening] = useState(false)
+  const [isListening, setIsListening] = useState(false);
 
   const [descTypedText, setDescTypedText] = useState("");
   const descFullText =
     "Prompt Me Anything To Know More About Malaysian Government Services";
   const [isDescTypingComplete, setIsDescTypingComplete] = useState(false);
 
+  const [samplePrompt, setSamplePrompt] = useState(""); // Make textarea controlled
   const [showInputBox, setShowInputBox] = useState(false);
   const [showPrompts, setShowPrompts] = useState(false);
-  // Type out header text
+
+  // Header typing animation
   useEffect(() => {
     if (headerTypedText.length < headerFullText.length) {
       const timeout = setTimeout(() => {
@@ -31,7 +33,7 @@ const PreQuestion = () => {
     }
   }, [headerTypedText]);
 
-  // Type out description text after header is complete
+  // Description typing animation
   useEffect(() => {
     if (isHeaderTypingComplete && descTypedText.length < descFullText.length) {
       const timeout = setTimeout(() => {
@@ -41,12 +43,10 @@ const PreQuestion = () => {
     } else if (descTypedText.length === descFullText.length) {
       setIsDescTypingComplete(true);
 
-      // Show input box after description is typed
       const inputTimeout = setTimeout(() => {
         setShowInputBox(true);
       }, 200);
 
-      // Show prompts after input box appears
       const promptsTimeout = setTimeout(() => {
         setShowPrompts(true);
       }, 300);
@@ -57,6 +57,27 @@ const PreQuestion = () => {
       };
     }
   }, [isHeaderTypingComplete, descTypedText]);
+
+  // Handle sample prompt click
+  const handleClick = (prompt: string, description: string) => {
+    setSamplePrompt(`${prompt}: ${description}`);
+  };
+
+  const handleVoiceCommand = () => {
+    setIsListening(!isListening);
+    console.log("Voice command toggled:", !isListening);
+  };
+
+  const handlePromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setSamplePrompt(e.target.value);
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    console.log("Submitting prompt:", samplePrompt);
+    // Send samplePrompt to backend or API
+  };
+
   const cardVariants = [
     { x: -50, y: 0, rotate: -2 },
     { x: 50, y: 0, rotate: 2 },
@@ -65,14 +86,10 @@ const PreQuestion = () => {
     { x: -20, y: 50, rotate: -2 },
     { x: 20, y: 50, rotate: 2 },
   ];
-   const handleVoiceCommand = () => {
-    setIsListening(!isListening)
-    // Here you would implement actual voice recognition
-    console.log("Voice command toggled:", !isListening)
-  }
+
   return (
     <main className="bg-gray-50 min-h-screen flex justify-center px-4">
-      <div className="min-w-[800px] w-full ">
+      <div className="min-w-[800px] w-full">
         <ChatHeading
           headerTypedText={headerTypedText}
           isHeaderTypingComplete={isHeaderTypingComplete}
@@ -80,7 +97,7 @@ const PreQuestion = () => {
           isDescTypingComplete={isDescTypingComplete}
         />
 
-         {/* Input Box */}
+        {/* Input Box */}
         <AnimatePresence>
           {showInputBox && (
             <motion.form
@@ -88,19 +105,15 @@ const PreQuestion = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              onSubmit={(e) => {
-                e.preventDefault()
-                const formData = new FormData(e.currentTarget)
-                const prompt = formData.get("prompt")
-                console.log("Submitting prompt:", prompt)
-                // Here you would send the data to your backend
-              }}
+              onSubmit={handleSubmit}
             >
               <div className="relative bg-white rounded-xl shadow-md overflow-hidden">
                 <textarea
                   name="prompt"
                   className="w-full p-4 pr-24 min-h-[120px] focus:outline-none border-none"
                   placeholder="Ask me about Malaysian government services..."
+                  value={samplePrompt}
+                  onChange={handlePromptChange}
                   required
                 />
                 <div className="absolute bottom-3 right-3 flex space-x-2">
@@ -121,10 +134,13 @@ const PreQuestion = () => {
                       <motion.div
                         className="absolute inset-0 rounded-lg"
                         animate={{
-                          boxShadow: ["0 0 0 0 rgba(239, 68, 68, 0)", "0 0 0 10px rgba(239, 68, 68, 0)"],
+                          boxShadow: [
+                            "0 0 0 0 rgba(239, 68, 68, 0)",
+                            "0 0 0 10px rgba(239, 68, 68, 0)",
+                          ],
                         }}
                         transition={{
-                          repeat: Number.POSITIVE_INFINITY,
+                          repeat: Infinity,
                           duration: 1.5,
                         }}
                       />
@@ -145,8 +161,7 @@ const PreQuestion = () => {
           )}
         </AnimatePresence>
 
-
-         {/* Sample Prompts */}
+        {/* Sample Prompts */}
         <AnimatePresence>
           {showPrompts && (
             <motion.div
@@ -193,7 +208,11 @@ const PreQuestion = () => {
                       stiffness: 100,
                     }}
                   >
-                    <SamplePrompt title={prompt.title} description={prompt.description} />
+                    <SamplePrompt
+                      title={prompt.title}
+                      description={prompt.description}
+                      handleClick={() => handleClick(prompt.title, prompt.description)}
+                    />
                   </motion.div>
                 ))}
               </div>

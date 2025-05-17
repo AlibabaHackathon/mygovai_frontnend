@@ -3,7 +3,7 @@ import React from 'react'
 import {motion} from "framer-motion"
 import { Search } from 'lucide-react';
 
-const SamplePrompt = ({ title, description }: { title: string; description: string }) => {
+const SamplePrompt = ({ title, description, handleClick }: { title: string; description: string, handleClick:any }) => {
     return (
     <motion.button
       className="bg-white rounded-lg p-4 text-left border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all w-full"
@@ -13,6 +13,7 @@ const SamplePrompt = ({ title, description }: { title: string; description: stri
         backgroundColor: "rgba(239, 246, 255, 0.5)", // Light blue background on hover
       }}
       whileTap={{ scale: 0.98 }}
+      onClick={handleClick}
     >
       <div className="flex items-start gap-3">
         <motion.div className="mt-1" whileHover={{ rotate: [0, -10, 10, -10, 0] }} transition={{ duration: 0.5 }}>
