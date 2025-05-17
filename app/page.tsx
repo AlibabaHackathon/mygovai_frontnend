@@ -1,7 +1,6 @@
 "use client";
 import PostQuestion from "@/components/PostQuestion";
 import PreQuestion from "@/components/PreQuestion";
-import { samp, tr } from "framer-motion/client";
 import { useState } from "react";
 
 export default function Home() {

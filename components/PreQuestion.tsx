@@ -46,11 +46,11 @@ const PreQuestion = ({handleSubmit, samplePrompt, setSamplePrompt}:any) => {
 
       const inputTimeout = setTimeout(() => {
         setShowInputBox(true);
-      }, 200);
+      }, 50);
 
       const promptsTimeout = setTimeout(() => {
         setShowPrompts(true);
-      }, 300);
+      }, 50);
 
       return () => {
         clearTimeout(inputTimeout);
