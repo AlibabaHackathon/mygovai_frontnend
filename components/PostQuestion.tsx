@@ -2,11 +2,7 @@
 
 import type React from "react";
 import { useState, useRef, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Mic, Send } from "lucide-react";
-import { cn } from "@/lib/utils";
 import NormalChatArea from "./NormalChatArea";
-import SplitScreenChatArea from "./SplitScreenChatArea";
 import InputArea from "./InputArea";
 
 type Message = {
@@ -16,7 +12,7 @@ type Message = {
   isTyping?: boolean;
 };
 
-export default function PostQuestion({initialPrompt}: any) {
+export default function PostQuestion({ initialPrompt }: any) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -26,56 +22,56 @@ export default function PostQuestion({initialPrompt}: any) {
 
   // Scroll to bottom whenever messages change
   useEffect(() => {
-  if (initialPrompt?.trim()) {
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      content: initialPrompt,
-      sender: "user",
-    };
+    if (initialPrompt?.trim()) {
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        content: initialPrompt,
+        sender: "user",
+      };
 
-    setMessages([userMessage]);
+      setMessages([userMessage]);
 
-    // Optionally, also trigger a bot response
-    const typingMessageId = (Date.now() + 1).toString();
-    const typingMessage: Message = {
-      id: typingMessageId,
-      content: "",
-      sender: "bot",
-      isTyping: true,
-    };
+      // Optionally, also trigger a bot response
+      const typingMessageId = (Date.now() + 1).toString();
+      const typingMessage: Message = {
+        id: typingMessageId,
+        content: "",
+        sender: "bot",
+        isTyping: true,
+      };
 
-    setMessages((prev) => [...prev, typingMessage]);
-    setIsTyping(true);
+      setMessages((prev) => [...prev, typingMessage]);
+      setIsTyping(true);
 
-    setTimeout(() => {
-      setIsTyping(false);
-      setMessages((prev) =>
-        prev.map((msg) =>
-          msg.id === typingMessageId
-            ? {
-                ...msg,
-                content: `This is a response to: "${userMessage.content}"`,
-                isTyping: false,
-              }
-            : msg
-        )
-      );
-    }, 1500);
+      setTimeout(() => {
+        setIsTyping(false);
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.id === typingMessageId
+              ? {
+                  ...msg,
+                  content: `This is a response to: "${userMessage.content}"`,
+                  isTyping: false,
+                }
+              : msg
+          )
+        );
+      }, 1500);
 
-    // Optional: clear input if you don't want it showing
-    setInputValue("");
-  }
-}, [initialPrompt]);
+      // Optional: clear input if you don't want it showing
+      setInputValue("");
+    }
+  }, [initialPrompt]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
 
-    // Normalize input (e.g., lowercase, trim)
+   
     const normalizedInput = inputValue.trim().toLowerCase();
 
     // Check if user wants to continue with the application
-    if (normalizedInput.includes("i want to continue with the application")) {
+    if (normalizedInput.includes("Help me fill up the form")) {
       setSplitScreen(true);
     }
 
@@ -86,10 +82,10 @@ export default function PostQuestion({initialPrompt}: any) {
       sender: "user",
     };
 
+    //Add user message to chat
+
     setMessages((prev) => [...prev, userMessage]);
     setInputValue("");
-
-    // Simulate bot typing
     setIsTyping(true);
 
     // Add temporary typing message
@@ -103,24 +99,67 @@ export default function PostQuestion({initialPrompt}: any) {
 
     setMessages((prev) => [...prev, typingMessage]);
 
-    // Simulate bot response after a delay
-    setTimeout(() => {
-      setIsTyping(false);
+    //Calling the API
+    try {
+      const response = await fetch("/api/ask", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          prompt: inputValue,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error(`API error: ${response.statusText}`);
+      }
+      const data = await response.json();
+      const botReply = data.output?.text || "No response";
+      console.log("API response:", data);
 
-      // Replace typing message with actual response
+      // Update bot message with API response
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === typingMessageId
+            ? { ...msg, content: botReply, isTyping: false }
+            : msg
+        )
+      );
+    } catch (error) {
+      console.log("Error:");
       setMessages((prev) =>
         prev.map((msg) =>
           msg.id === typingMessageId
             ? {
-                id: msg.id,
-                content: `This is a response to: "${userMessage.content}"`,
-                sender: "bot",
+                ...msg,
+                content: "Sorry, something went wrong. Please try again.",
                 isTyping: false,
               }
             : msg
         )
       );
-    }, 1500);
+    } finally {
+      setIsTyping(false);
+    }
+
+    // // Simulate bot response after a delay
+    // setTimeout(() => {
+    //   setIsTyping(false);
+
+    //   // Replace typing message with actual response
+    //   setMessages((prev) =>
+    //     prev.map((msg) =>
+    //       msg.id === typingMessageId
+    //         ? {
+    //             id: msg.id,
+    //             content: `This is a response to: "${userMessage.content}"`,
+    //             sender: "bot",
+    //             isTyping: false,
+    //           }
+    //         : msg
+    //     )
+    //   );
+    // }, 1500);
   };
 
   return (
@@ -143,13 +182,12 @@ export default function PostQuestion({initialPrompt}: any) {
             </div>
 
             <div className="bg-gray-300 min-w-[630px] rounded-md">
-                <iframe
-        src="https://kasmt.htetaung.com"
-        title="KASMT"
-        className="w-full h-full border-none"
-        loading="eager"
-       
-      />
+              <iframe
+                src="http://47.250.51.235:6082/vnc.html"
+                title="KASMT"
+                className="w-full h-full border-none"
+                loading="eager"
+              />
             </div>
           </div>
         </main>
@@ -167,8 +205,6 @@ export default function PostQuestion({initialPrompt}: any) {
           />
         </>
       )}
-
-      {/* Input area - sticky at bottom */}
     </main>
   );
 }
