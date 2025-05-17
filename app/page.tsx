@@ -14,15 +14,17 @@ export default function Home() {
   };
 
   return (
-    <main className="bg-gray-50 min-h-screen flex justify-center">
-      <div className="my-5">
+    <main className="bg-gray-50 min-h-screen ">
+      <div className="my-5 flex justify-center">
         {chatArea ? (
-          <div className="min-w-[1000px]">
-          <PostQuestion/>
+          <div className="min-w-[1500px]">
+          <PostQuestion
+          initialPrompt = {samplePrompt}
+          />
           </div>
         ) : (
           <>
-            <div>
+            <div className="min-w-[1000px]">
               <PreQuestion
                 handleSubmit={handleSubmit}
                 samplePrompt={samplePrompt}

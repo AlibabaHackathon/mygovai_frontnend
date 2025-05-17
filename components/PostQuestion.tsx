@@ -1,61 +1,111 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState, useRef, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Mic, Send } from "lucide-react"
-import { cn } from "@/lib/utils"
-import NormalChatArea from "./NormalChatArea"
+import type React from "react";
+import { useState, useRef, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Mic, Send } from "lucide-react";
+import { cn } from "@/lib/utils";
+import NormalChatArea from "./NormalChatArea";
+import SplitScreenChatArea from "./SplitScreenChatArea";
+import InputArea from "./InputArea";
 
 type Message = {
-  id: string
-  content: string
-  sender: "user" | "bot"
-  isTyping?: boolean
-}
+  id: string;
+  content: string;
+  sender: "user" | "bot";
+  isTyping?: boolean;
+};
 
-export default function PostQuestion() {
-  const [messages, setMessages] = useState<Message[]>([])
-  const [inputValue, setInputValue] = useState("")
-  const [isTyping, setIsTyping] = useState(false)
-  const messagesEndRef = useRef<HTMLDivElement>(null)
-  const chatContainerRef = useRef<HTMLDivElement>(null)
-  const [splitScreen, setSplitScreen] = useState(false)
+export default function PostQuestion({initialPrompt}: any) {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [inputValue, setInputValue] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const [splitScreen, setSplitScreen] = useState(false);
 
   // Scroll to bottom whenever messages change
+  useEffect(() => {
+  if (initialPrompt?.trim()) {
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      content: initialPrompt,
+      sender: "user",
+    };
 
+    setMessages([userMessage]);
+
+    // Optionally, also trigger a bot response
+    const typingMessageId = (Date.now() + 1).toString();
+    const typingMessage: Message = {
+      id: typingMessageId,
+      content: "",
+      sender: "bot",
+      isTyping: true,
+    };
+
+    setMessages((prev) => [...prev, typingMessage]);
+    setIsTyping(true);
+
+    setTimeout(() => {
+      setIsTyping(false);
+      setMessages((prev) =>
+        prev.map((msg) =>
+          msg.id === typingMessageId
+            ? {
+                ...msg,
+                content: `This is a response to: "${userMessage.content}"`,
+                isTyping: false,
+              }
+            : msg
+        )
+      );
+    }, 1500);
+
+    // Optional: clear input if you don't want it showing
+    setInputValue("");
+  }
+}, [initialPrompt]);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!inputValue.trim()) return
+    e.preventDefault();
+    if (!inputValue.trim()) return;
+
+    // Normalize input (e.g., lowercase, trim)
+    const normalizedInput = inputValue.trim().toLowerCase();
+
+    // Check if user wants to continue with the application
+    if (normalizedInput.includes("i want to continue with the application")) {
+      setSplitScreen(true);
+    }
 
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
       content: inputValue,
       sender: "user",
-    }
+    };
 
-    setMessages((prev) => [...prev, userMessage])
-    setInputValue("")
+    setMessages((prev) => [...prev, userMessage]);
+    setInputValue("");
 
     // Simulate bot typing
-    setIsTyping(true)
+    setIsTyping(true);
 
     // Add temporary typing message
-    const typingMessageId = (Date.now() + 1).toString()
+    const typingMessageId = (Date.now() + 1).toString();
     const typingMessage: Message = {
       id: typingMessageId,
       content: "",
       sender: "bot",
       isTyping: true,
-    }
+    };
 
-    setMessages((prev) => [...prev, typingMessage])
+    setMessages((prev) => [...prev, typingMessage]);
 
     // Simulate bot response after a delay
     setTimeout(() => {
-      setIsTyping(false)
+      setIsTyping(false);
 
       // Replace typing message with actual response
       setMessages((prev) =>
@@ -67,52 +117,52 @@ export default function PostQuestion() {
                 sender: "bot",
                 isTyping: false,
               }
-            : msg,
-        ),
-      )
-    }, 1500)
-  }
+            : msg
+        )
+      );
+    }, 1500);
+  };
 
   return (
     <main className="flex flex-col h-screen bg-gray-50 scrollbar-hide">
       {/* Chat messages area */}
-    <NormalChatArea chatContainerRef = {chatContainerRef} messages = {messages} messagesEndRef = {messagesEndRef} />
+      {splitScreen ? (
+        <main className="flex  w-full px-5 ">
+          <div className="flex flex-row space-x-10 ">
+            <div className="min-w-[800px]">
+              <NormalChatArea
+                chatContainerRef={chatContainerRef}
+                messages={messages}
+                messagesEndRef={messagesEndRef}
+              />
+              <InputArea
+                handleSubmit={handleSubmit}
+                inputValue={inputValue}
+                setInputValue={setInputValue}
+              />
+            </div>
+
+            <div className="bg-gray-300 min-h-screen min-w-[630px] rounded-md">
+                
+            </div>
+          </div>
+        </main>
+      ) : (
+        <>
+          <NormalChatArea
+            chatContainerRef={chatContainerRef}
+            messages={messages}
+            messagesEndRef={messagesEndRef}
+          />
+          <InputArea
+            handleSubmit={handleSubmit}
+            inputValue={inputValue}
+            setInputValue={setInputValue}
+          />
+        </>
+      )}
 
       {/* Input area - sticky at bottom */}
-      <div className="border-t border-gray-200  sticky bottom-0 p-4">
-        <div className="max-w-3xl mx-auto">
-          <form onSubmit={handleSubmit} className="relative">
-            <div className="rounded-lg border border-gray-300 bg-white overflow-hidden shadow-sm">
-              <textarea
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Ask anything..."
-                className="w-full p-3 outline-none resize-none"
-                rows={1}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault()
-                    handleSubmit(e)
-                  }
-                }}
-              />
-
-              <div className="flex justify-between items-center px-3 py-2 bg-gray-50">
-                <p className="text-xs text-gray-500">Press Enter to send, Shift+Enter for new line</p>
-                <div className="flex space-x-2">
-                  <Button type="button" size="icon" variant="ghost">
-                    <Mic className="h-5 w-5" />
-                  </Button>
-                  <Button type="submit" disabled={!inputValue.trim()}>
-                    <Send className="h-4 w-4 mr-2" />
-                    Submit
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
     </main>
-  )
+  );
 }
