@@ -128,7 +128,7 @@ export default function PostQuestion({initialPrompt}: any) {
       {/* Chat messages area */}
       {splitScreen ? (
         <main className="flex  w-full px-5 ">
-          <div className="flex flex-row space-x-10 ">
+          <div className="flex flex-row space-x-10 max-h-[800px] ">
             <div className="min-w-[800px]">
               <NormalChatArea
                 chatContainerRef={chatContainerRef}
@@ -142,8 +142,14 @@ export default function PostQuestion({initialPrompt}: any) {
               />
             </div>
 
-            <div className="bg-gray-300 min-h-screen min-w-[630px] rounded-md">
-                
+            <div className="bg-gray-300 min-w-[630px] rounded-md">
+                <iframe
+        src="https://kasmt.htetaung.com"
+        title="KASMT"
+        className="w-full h-full border-none"
+        loading="eager"
+       
+      />
             </div>
           </div>
         </main>
