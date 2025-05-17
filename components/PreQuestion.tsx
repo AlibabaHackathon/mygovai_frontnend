@@ -6,7 +6,7 @@ import React from "react";
 import ChatHeading from "./ChatHeading";
 import { Mic, Send } from "lucide-react";
 
-const PreQuestion = () => {
+const PreQuestion = ({handleSubmit, samplePrompt, setSamplePrompt}:any) => {
   const [headerTypedText, setHeaderTypedText] = useState("");
   const headerFullText = "Hello There, I am MyGovAI";
   const [isHeaderTypingComplete, setIsHeaderTypingComplete] = useState(false);
@@ -17,9 +17,10 @@ const PreQuestion = () => {
     "Prompt Me Anything To Know More About Malaysian Government Services";
   const [isDescTypingComplete, setIsDescTypingComplete] = useState(false);
 
-  const [samplePrompt, setSamplePrompt] = useState(""); // Make textarea controlled
+ 
   const [showInputBox, setShowInputBox] = useState(false);
   const [showPrompts, setShowPrompts] = useState(false);
+ 
 
   // Header typing animation
   useEffect(() => {
@@ -72,11 +73,7 @@ const PreQuestion = () => {
     setSamplePrompt(e.target.value);
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log("Submitting prompt:", samplePrompt);
-    // Send samplePrompt to backend or API
-  };
+
 
   const cardVariants = [
     { x: -50, y: 0, rotate: -2 },
@@ -152,6 +149,7 @@ const PreQuestion = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     aria-label="Send message"
+                   
                   >
                     <Send className="h-5 w-5" />
                   </motion.button>
