@@ -71,7 +71,7 @@ export default function PostQuestion({ initialPrompt }: any) {
     const normalizedInput = inputValue.trim().toLowerCase();
 
     // Check if user wants to continue with the application
-    if (normalizedInput.includes("Help me fill up the form")) {
+    if (normalizedInput.includes("help me fill up the form")) {
       setSplitScreen(true);
     }
 
@@ -141,25 +141,6 @@ export default function PostQuestion({ initialPrompt }: any) {
     } finally {
       setIsTyping(false);
     }
-
-    // // Simulate bot response after a delay
-    // setTimeout(() => {
-    //   setIsTyping(false);
-
-    //   // Replace typing message with actual response
-    //   setMessages((prev) =>
-    //     prev.map((msg) =>
-    //       msg.id === typingMessageId
-    //         ? {
-    //             id: msg.id,
-    //             content: `This is a response to: "${userMessage.content}"`,
-    //             sender: "bot",
-    //             isTyping: false,
-    //           }
-    //         : msg
-    //     )
-    //   );
-    // }, 1500);
   };
 
   return (
