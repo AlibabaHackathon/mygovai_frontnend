@@ -1,18 +1,30 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
-import { useEffect } from "react";
 
-const NormalChatArea = ({
+interface Message {
+  id: string;
+  sender: "user" | "bot";
+  content: string;
+  isTyping?: boolean;
+}
+
+interface NormalChatAreaProps {
+  messages: Message[];
+  messagesEndRef: React.RefObject<HTMLDivElement | null>;
+  chatContainerRef: React.RefObject<HTMLDivElement | null>;
+}
+const NormalChatArea: React.FC<NormalChatAreaProps> = ({
   chatContainerRef,
   messages,
   messagesEndRef,
-}: any) => {
+}) => {
   useEffect(() => {
     if (messagesEndRef?.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages]); // Trigger scroll on new messages
+  }, [messages, messagesEndRef]); // ✅ Fixed warning by including messagesEndRef
+
   return (
     <div
       ref={chatContainerRef}
@@ -24,7 +36,7 @@ const NormalChatArea = ({
         </div>
       )}
 
-      {messages.map((message: any) => (
+      {messages.map((message) => (
         <div
           key={message.id}
           className={cn(

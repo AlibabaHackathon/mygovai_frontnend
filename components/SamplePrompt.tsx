@@ -1,22 +1,32 @@
 "use client";
-import React from 'react'
-import {motion} from "framer-motion"
-import { Search } from 'lucide-react';
+import React from "react";
+import { motion } from "framer-motion";
+import { Search } from "lucide-react";
 
-const SamplePrompt = ({ title, description, handleClick }: { title: string; description: string, handleClick:any }) => {
-    return (
+interface SamplePromptProps {
+  title: string;
+  description: string;
+  handleClick: () => void; // Replaced `any` with explicit function type
+}
+
+const SamplePrompt = ({ title, description, handleClick }: SamplePromptProps) => {
+  return (
     <motion.button
       className="bg-white rounded-lg p-4 text-left border border-gray-200 hover:border-blue-500 hover:shadow-md transition-all w-full"
       whileHover={{
         scale: 1.03,
         boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-        backgroundColor: "rgba(239, 246, 255, 0.5)", // Light blue background on hover
+        backgroundColor: "rgba(239, 246, 255, 0.5)",
       }}
       whileTap={{ scale: 0.98 }}
       onClick={handleClick}
     >
       <div className="flex items-start gap-3">
-        <motion.div className="mt-1" whileHover={{ rotate: [0, -10, 10, -10, 0] }} transition={{ duration: 0.5 }}>
+        <motion.div
+          className="mt-1"
+          whileHover={{ rotate: [0, -10, 10, -10, 0] }}
+          transition={{ duration: 0.5 }}
+        >
           <Search className="h-5 w-5 text-blue-600" />
         </motion.div>
         <div>
@@ -25,7 +35,7 @@ const SamplePrompt = ({ title, description, handleClick }: { title: string; desc
         </div>
       </div>
     </motion.button>
-  )
-}
+  );
+};
 
-export default SamplePrompt
+export default SamplePrompt;

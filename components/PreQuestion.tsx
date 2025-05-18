@@ -6,7 +6,13 @@ import React from "react";
 import ChatHeading from "./ChatHeading";
 import { Mic, Send } from "lucide-react";
 
-const PreQuestion = ({handleSubmit, samplePrompt, setSamplePrompt}:any) => {
+interface PreQuestionProps {
+  handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  samplePrompt: string;
+  setSamplePrompt: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const PreQuestion = ({handleSubmit, samplePrompt, setSamplePrompt}:PreQuestionProps) => {
   const [headerTypedText, setHeaderTypedText] = useState("");
   const headerFullText = "Hello There, I am MyGovAI";
   const [isHeaderTypingComplete, setIsHeaderTypingComplete] = useState(false);

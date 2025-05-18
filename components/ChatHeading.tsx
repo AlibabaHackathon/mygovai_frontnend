@@ -2,12 +2,19 @@ import React from "react";
 import { motion } from "framer-motion";
 import { FlagIcon } from "lucide-react";
 
-const ChatHeading = ({
+type ChatHeadingProps = {
+  headerTypedText: string;
+  isHeaderTypingComplete: boolean;
+  descTypedText: string;
+  isDescTypingComplete: boolean;
+};
+
+const ChatHeading: React.FC<ChatHeadingProps> = ({
   headerTypedText,
   isHeaderTypingComplete,
   descTypedText,
   isDescTypingComplete,
-}: any) => {
+}) => {
   return (
     <div className="text-center flex flex-col space-y-4 mb-12">
       <motion.div
