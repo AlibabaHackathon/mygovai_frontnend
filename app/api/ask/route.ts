@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
     const { prompt } = await req.json();
 
     const dashResponse = await fetch(
-      "https://dashscope-intl.aliyuncs.com/api/v1/apps/7807999bf4a048f6b490c4a2ce43aa3c/completion",
+      "https://dashscope-intl.aliyuncs.com/api/v1/apps/223e1104f25841e6a1c1ced324b7d9d3/completion",
       {
         method: "POST",
         headers: {

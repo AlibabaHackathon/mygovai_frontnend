@@ -154,7 +154,7 @@ export default function PostQuestion({ initialPrompt }: PostQuestionProps) {
 
             <div className="bg-gray-300 min-w-[630px] rounded-md">
               <iframe
-                src="https://kasmt.htetaung.com"
+                src="https://mygovvnc.htetaung.com/vnc.html"
                 title="KASMT"
                 className="w-full h-full border-none"
                 loading="eager"
